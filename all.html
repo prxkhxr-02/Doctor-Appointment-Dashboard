@@ -1,0 +1,1306 @@
+<?php
+session_start();
+error_reporting(0);
+include('includes/dbconnection.php');
+if (strlen($_SESSION['damsid']==0)) {
+ header('location:logout.php');
+ } else{
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DAMS || New Appointment Detail</title>
+<link rel="stylesheet" href="libs/bower/font-awesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="libs/bower/material-design-iconicfont/dist/css/material-design-iconic-font.css">
+<!-- build:css assets/css/app.min.css -->
+<link rel="stylesheet" href="libs/bower/animate.css/animate.min.css">
+<link rel="stylesheet" 
+href="libs/bower/fullcalendar/dist/fullcalendar.min.css">
+<link rel="stylesheet" href="libs/bower/perfect-scrollbar/css/perfectscrollbar.css">
+<link rel="stylesheet" href="assets/css/bootstrap.css">
+<link rel="stylesheet" href="assets/css/core.css">
+ DOCTOR APPOINTMENT DASHBOARD
+69
+<link rel="stylesheet" href="assets/css/app.css">
+<!-- endbuild -->
+<link rel="stylesheet" 
+href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,
+300">
+<script src="libs/bower/breakpoints.js/dist/breakpoints.min.js"></script>
+<script>
+Breakpoints();
+</script>
+</head>
+<body class="menubar-left menubar-unfold menubar-light theme-primary">
+<!--============= start main area -->
+<?php include_once('includes/header.php');?>
+<?php include_once('includes/sidebar.php');?>
+<!-- APP MAIN ==========-->
+<main id="app-main" class="app-main">
+ <div class="wrap">
+<section class="app-content">
+<div class="row">
+<!-- DOM dataTable -->
+<div class="col-md-12">
+<div class="widget">
+<header class="widget-header">
+<h4 class="widget-title">New Appointment</h4>
+ DOCTOR APPOINTMENT DASHBOARD
+70
+</header><!-- .widget-header -->
+<hr class="widget-separator">
+<div class="widget-body">
+<div class="table-responsive">
+<table class="table table-bordered table-hover js-basic-example dataTable tablecustom">
+<thead>
+<tr>
+<th>S.No</th>
+<th>Appointment Number</th>
+<th>Patient Name</th>
+<th>Mobile Number</th>
+<th>Email</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+ <?php
+ $docid=$_SESSION['damsid'];
+$sql="SELECT * from tblappointment where Status is null && Doctor=:docid";
+$query = $dbh -> prepare($sql);
+$query-> bindParam(':docid', $docid, PDO::PARAM_STR);
+ DOCTOR APPOINTMENT DASHBOARD
+71
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $row)
+{?>
+<tr>
+<td><?php echo htmlentities($cnt);?></td>
+<td><?php echo htmlentities($row->AppointmentNumber);?></td>
+<td><?php echo htmlentities($row->Name);?></td>
+<td><?php echo htmlentities($row->MobileNumber);?></td>
+<td><?php echo htmlentities($row->Email);?></td>
+<?php if($row->Status==""){ ?>
+<td><?php echo "Not Updated Yet"; ?></td>
+<?php } else { ?><td><?php echo htmlentities($row->Status);?>
+</td>
+<?php } ?> 
+<td><a href="view-appointment-detail.php?editid=<?php echo htmlentities ($row-
+>ID);?>&&aptid=<?php echo htmlentities ($row->AppointmentNumber);?>" 
+class="btn btn-primary">View</a></td>
+</tr>
+<?php $cnt=$cnt+1;}} ?> 
+ DOCTOR APPOINTMENT DASHBOARD
+72
+ </tbody>
+ <tfoot>
+ <tr>
+ <th>S.No</th>
+ <th>Appointment Number</th>
+ <th>Patient Name</th>
+ <th>Mobile Number</th>
+<th>Email</th>
+th>Status</th>
+<th>Action</th>
+ </tr>
+ </tfoot>
+</table>
+</div>
+</div><!-- .widget-body -->
+</div><!-- .widget -->
+</div><!-- END column -->
+</div><!-- .row -->
+</section><!-- .app-content -->
+</div><!-- .wrap -->
+ <!-- APP FOOTER -->
+ <?php include_once('includes/footer.php');?>
+ <!-- /#app-footer -->
+ DOCTOR APPOINTMENT DASHBOARD
+73
+</main>
+<!--========== END app main -->
+<!-- APP CUSTOMIZER -->
+<?php include_once('includes/customizer.php');?>
+<!-- build:js assets/js/core.min.js -->
+<script src="libs/bower/jquery/dist/jquery.js"></script>
+<script src="libs/bower/jquery-ui/jquery-ui.min.js"></script>
+<script src="libs/bower/jQuery-StorageAPI/jquery.storageapi.min.js"></script>
+<script src="libs/bower/bootstrapsass/assets/javascripts/bootstrap.js"></script>
+<script src="libs/bower/jquery-slimscroll/jquery.slimscroll.js"></script>
+<script src="libs/bower/perfect-scrollbar/js/perfectscrollbar.jquery.js"></script>
+<script src="libs/bower/PACE/pace.min.js"></script>
+<!-- endbuild -->
+ <!-- build:js assets/js/app.min.js -->
+<script src="assets/js/library.js"></script>
+<script src="assets/js/plugins.js"></script>
+<script src="assets/js/app.js"></script>
+<!-- endbuild -->
+<script src="libs/bower/moment/moment.js"></script>
+<script src="libs/bower/fullcalendar/dist/fullcalendar.min.js"></script>
+<script src="assets/js/fullcalendar.js"></script>
+ DOCTOR APPOINTMENT DASHBOARD
+74
+</body>
+</html>
+<?php }?>
+ DOCTOR APPOINTMENT DASHBOARD
+75
+12.Coding for profile.php :
+<?php
+session_start();
+error_reporting(0);
+include('includes/dbconnection.php');
+if (strlen($_SESSION['damsid']==0)) {
+ header('location:logout.php');
+ } else{
+ if(isset($_POST['submit']))
+ {
+ $did=$_SESSION['damsid'];
+ $name=$_POST['fname'];
+ $mobno=$_POST['mobilenumber'];
+ $email=$_POST['email'];
+ $sid=$_POST['specializationid'];
+ $sql="update tbldoctor set 
+FullName=:name,MobileNumber=:mobilenumber,Email=:email,Specialization=:si
+d where ID=:did";
+ $query = $dbh->prepare($sql);
+ $query->bindParam(':name',$name,PDO::PARAM_STR);
+ $query->bindParam(':email',$email,PDO::PARAM_STR);
+ $query->bindParam(':mobilenumber',$mobno,PDO::PARAM_STR);
+ $query->bindParam(':sid',$sid,PDO::PARAM_STR);
+ $query->bindParam(':did',$did,PDO::PARAM_STR);
+ DOCTOR APPOINTMENT DASHBOARD
+76
+$query->execute();
+echo '<script>alert("Profile has been updated")</script>';
+}
+ ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DAMS - Doctor Profile</title>
+<link rel="stylesheet" href="libs/bower/font-awesome/css/fontawesome.min.css">
+ <link rel="stylesheet" href="libs/bower/material-design-iconicfont/dist/css/material-design-iconic-font.css">
+ <!-- build:css assets/css/app.min.css -->
+ <link rel="stylesheet" href="libs/bower/animate.css/animate.min.css">
+ <link rel="stylesheet" href="libs/bower/fullcalendar/dist/fullcalendar.min.css">
+ <link rel="stylesheet" href="libs/bower/perfect-scrollbar/css/perfectscrollbar.css">
+ <link rel="stylesheet" href="assets/css/bootstrap.css">
+ <link rel="stylesheet" href="assets/css/core.css">
+ <link rel="stylesheet" href="assets/css/app.css">
+ <!-- endbuild -->
+ <link rel="stylesheet" 
+href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,
+300">
+ DOCTOR APPOINTMENT DASHBOARD
+77
+ <script src="libs/bower/breakpoints.js/dist/breakpoints.min.js"></script>
+ <script>
+ Breakpoints();
+ </script>
+</head>
+ <body class="menubar-left menubar-unfold menubar-light theme-primary">
+<!--============= start main area -->
+<?php include_once('includes/header.php');?>
+<?php include_once('includes/sidebar.php');?>
+<!-- APP MAIN ==========-->
+<main id="app-main" class="app-main">
+ <div class="wrap">
+ <section class="app-content">
+ <div class="row">
+ <div class="col-md-12">
+ <div class="widget">
+ <header class="widget-header">
+ <h3 class="widget-title">Doctor Profile</h3>
+ </header><!-- .widget-header -->
+ <hr class="widget-separator">
+ <div class="widget-body">
+ <?php
+$did=$_SESSION['damsid'];
+ DOCTOR APPOINTMENT DASHBOARD
+78
+$sql="SELECT tbldoctor.*,tblspecialization.ID as 
+sid,tblspecialization.Specialization as sssp from tbldoctor join tblspecialization on 
+tblspecialization.ID=tbldoctor.Specialization where tbldoctor.ID=:did";
+$query = $dbh -> prepare($sql);
+$query->bindParam(':did',$did,PDO::PARAM_STR);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $row)
+{ ?>
+ <form class="form-horizontal" method="post">
+ <div class="form-group">
+ <label for="exampleTextInput1" class="col-sm-3 controllabel">Employee ID:</label>
+ <div class="col-sm-9">
+ <input id="fname" type="text" class="form-control" placeholder="Full 
+Name" name="fname" required="true" value="<?php echo $row->FullName;?>">
+ </div>
+ </div>
+ <div class="form-group">
+ <label for="email2" class="col-sm-3 control-label">Email:</label>
+ <div class="col-sm-9">
+ DOCTOR APPOINTMENT DASHBOARD
+79
+ <input type="email" class="form-control" id="email" name="email" 
+value="<?php echo $row->Email;?>" required='true'>
+ </div>
+ </div>
+ <div class="form-group">
+ <label for="email2" class="col-sm-3 control-label">Contact 
+Number:</label>
+ <div class="col-sm-9">
+ <input type="text" class="form-control" id="email2" 
+name="mobilenumber" value="<?php echo $row->MobileNumber;?>" 
+required='true' maxlength='10'>
+ </div>
+ </div>
+ <div class="form-group">
+ <label for="email2" class="col-sm-3 controllabel">Specialization:</label>
+ <div class="col-sm-9">
+ <select class="form-control" name="specializationid">
+ <option value="<?php echo htmlentities($row->ID);?>"><?php echo 
+htmlentities($row->sssp);?></option>
+ <?php
+$sql1="SELECT * from tblspecialization";
+$query1 = $dbh -> prepare($sql1);
+$query1->execute();
+$results1=$query1->fetchAll(PDO::FETCH_OBJ);
+ DOCTOR APPOINTMENT DASHBOARD
+80
+$cnt=1;
+if($query1->rowCount() > 0)
+{
+foreach($results1 as $row1)
+{ ?>
+ <option value="<?php echo htmlentities($row1->ID);?>"><?php echo 
+htmlentities($row1->Specialization);?></option><?php $cnt=$cnt+1;}} ?> 
+ </select>
+ </div>
+ </div>
+ <div class="form-group">
+ <label for="email2" class="col-sm-3 control-label">Regsitration 
+Date:</label>
+ <div class="col-sm-9">
+ <input type="text" class="form-control" id="email2" name="" 
+value="<?php echo $row->CreationDate;?>" readonly="true">
+ </div>
+ </div>
+ <?php $cnt=$cnt+1;}} ?>
+ <div class="row">
+ <div class="col-sm-9 col-sm-offset-3">
+ <button type="submit" class="btn btn-success" 
+name="submit">Update</button>
+ DOCTOR APPOINTMENT DASHBOARD
+81
+ </div>
+ </div>
+ </form>
+ </div><!-- .widget-body -->
+ </div><!-- .widget -->
+ </div><!-- END column -->
+</div><!-- .row -->
+ </section><!-- #dash-content -->
+</div><!-- .wrap -->
+ <!-- APP FOOTER -->
+ <?php include_once('includes/footer.php');?>
+ <!-- /#app-footer -->
+</main>
+<!--========== END app main -->
+<?php include_once('includes/customizer.php');?>
+<!-- SIDE PANEL -->
+<!-- build:js assets/js/core.min.js -->
+ <script src="libs/bower/jquery/dist/jquery.js"></script>
+ <script src="libs/bower/jquery-ui/jquery-ui.min.js"></script>
+ <script src="libs/bower/jQuery-Storage-API/jquery.storageapi.min.js"></script>
+ <script src="libs/bower/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
+ <script src="libs/bower/jquery-slimscroll/jquery.slimscroll.js"></script>
+ <script src="libs/bower/perfect-scrollbar/js/perfect-scrollbar.jquery.js"></script>
+ DOCTOR APPOINTMENT DASHBOARD
+82
+ <script src="libs/bower/PACE/pace.min.js"></script>
+ <!-- endbuild -->
+<!-- build:js assets/js/app.min.js -->
+ <script src="assets/js/library.js"></script>
+ <script src="assets/js/plugins.js"></script>
+ <script src="assets/js/app.js"></script>
+ <!-- endbuild -->
+ <script src="libs/bower/moment/moment.js"></script>
+ <script src="libs/bower/fullcalendar/dist/fullcalendar.min.js"></script>
+ <script src="assets/js/fullcalendar.js"></script>
+</body>
+</html>
+<?php }?>
+ DOCTOR APPOINTMENT DASHBOARD
+83
+13.Coding for search.php :
+<?php
+session_start();
+error_reporting(0);
+include('includes/dbconnection.php');
+if (strlen($_SESSION['damsid']==0)) {
+ header('location:logout.php');
+ } else{
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DAMS || Search Appointment Detail</title>
+<link rel="stylesheet" href="libs/bower/font-awesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="libs/bower/material-design-iconicfont/dist/css/material-design-iconic-font.css">
+<!-- build:css assets/css/app.min.css -->
+<link rel="stylesheet" href="libs/bower/animate.css/animate.min.css">
+<link rel="stylesheet" 
+href="libs/bower/fullcalendar/dist/fullcalendar.min.css">
+<link rel="stylesheet" href="libs/bower/perfect-scrollbar/css/perfectscrollbar.css">
+<link rel="stylesheet" href="assets/css/bootstrap.css">
+<link rel="stylesheet" href="assets/css/core.css">
+ DOCTOR APPOINTMENT DASHBOARD
+84
+<link rel="stylesheet" href="assets/css/app.css">
+<!-- endbuild -->
+<link rel="stylesheet" 
+href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,
+300">
+<script src="libs/bower/breakpoints.js/dist/breakpoints.min.js"></script>
+<script>
+Breakpoints();
+</script>
+</head>
+<body class="menubar-left menubar-unfold menubar-light theme-primary">
+<!--============= start main area -->
+<?php include_once('includes/header.php');?>
+<?php include_once('includes/sidebar.php');?>
+<!-- APP MAIN ==========-->
+<main id="app-main" class="app-main">
+ <div class="wrap">
+<section class="app-content">
+<div class="row">
+<!-- DOM dataTable -->
+<div class="col-md-12">
+<div class="widget">
+<header class="widget-header">
+<form id="basic-form" method="post">
+ DOCTOR APPOINTMENT DASHBOARD
+85
+ <div class="form-group">
+ <label>Search by Appointment No./Name/Mobile 
+No.</label>
+ <input id="searchdata" type="text" name="searchdata" 
+required="true" class="form-control" placeholder="Appointment 
+No./Name/Mobile No."></div>
+ <br>
+ <button type="submit" class="btn btn-primary" name="search" 
+id="submit">Search</button>
+ </form>
+</header><!-- .widget-header -->
+<?php
+if(isset($_POST['search']))
+{ 
+$sdata=$_POST['searchdata'];
+ ?>
+ <h4 align="center">Result against "<?php echo $sdata;?>" keyword </h4>
+<div class="widget-body">
+<div class="table-responsive">
+<table class="table table-bordered 
+table-hover js-basic-example dataTable table-custom">
+<thead>
+<tr>
+<th>S.No</th>
+ DOCTOR APPOINTMENT DASHBOARD
+86
+<th>Appointment Number</th>
+<th>Patient Name</th>
+<th>Mobile Number</th>
+<th>Email</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<?php
+$docid=$_SESSION['damsid'];
+$sql="SELECT * from tblappointment where AppointmentNumber like '$sdata%' 
+|| Name like '$sdata%' || MobileNumber like '$sdata%' && Doctor=:docid";
+$query = $dbh -> prepare($sql);
+$query-> bindParam(':docid', $docid, PDO::PARAM_STR);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $row)
+{ ?>
+<tr>
+ DOCTOR APPOINTMENT DASHBOARD
+87
+<td><?php echo htmlentities($cnt);?></td>
+<td><?php echo htmlentities($row->AppointmentNumber);?></td>
+<td><?php echo htmlentities($row->Name);?></td>
+<td><?php echo htmlentities($row->MobileNumber);?></td>
+<td><?php echo htmlentities($row->Email);?></td>
+<?php if($row->Status==""){ ?>
+<td><?php echo "Not Updated Yet"; ?></td>
+<?php } else { ?> <td><?php echo htmlentities($row->Status);?>
+</td>
+<?php } ?> 
+<td><a href="view-appointment-detail.php?editid=<?php echo htmlentities ($row-
+>ID);?>&&aptid=<?php echo htmlentities ($row->AppointmentNumber);?>" 
+class="btn btn-primary">View</a></td>
+</tr>
+</tbody>
+<tfoot>
+<tr>
+<th>S.No</th>
+th>Appointment Number</th>
+<th>Patient Name</th>
+<th>Mobile Number</th>
+<th>Email</th>
+<th>Status</th>
+ <th>Action</th>
+ DOCTOR APPOINTMENT DASHBOARD
+88
+ </tr>
+ </tfoot>
+ <?php 
+$cnt=$cnt+1;
+} } else { ?>
+ <tr>
+ <td colspan="8"> No record found against this search</td>
+ </tr>
+ <?php } }?>
+</table>
+</div>
+</div><!-- .widget-body -->
+</div><!-- .widget -->
+</div><!-- END column -->
+ </div><!-- .row -->
+</section><!-- .app-content -->
+</div><!-- .wrap -->
+ <!-- APP FOOTER -->
+ <?php include_once('includes/footer.php');?>
+ <!-- /#app-footer -->
+</main>
+<!--========== END app main -->
+ DOCTOR APPOINTMENT DASHBOARD
+89
+<!-- APP CUSTOMIZER -->
+<?php include_once('includes/customizer.php');?>
+<!-- build:js assets/js/core.min.js -->
+<script src="libs/bower/jquery/dist/jquery.js"></script>
+<script src="libs/bower/jquery-ui/jquery-ui.min.js"></script>
+<script src="libs/bower/jQuery-StorageAPI/jquery.storageapi.min.js"></script>
+<script src="libs/bower/bootstrapsass/assets/javascripts/bootstrap.js"></script>
+<script src="libs/bower/jquery-slimscroll/jquery.slimscroll.js"></script>
+<script src="libs/bower/perfect-scrollbar/js/perfectscrollbar.jquery.js"></script>
+<script src="libs/bower/PACE/pace.min.js"></script>
+<!-- endbuild -->
+ <!-- build:js assets/js/app.min.js -->
+<script src="assets/js/library.js"></script>
+<script src="assets/js/plugins.js"></script>
+<script src="assets/js/app.js"></script>
+<!-- endbuild -->
+<script src="libs/bower/moment/moment.js"></script>
+<script src="libs/bower/fullcalendar/dist/fullcalendar.min.js"></script>
+<script src="assets/js/fullcalendar.js"></script>
+</body>
+</html>
+ DOCTOR APPOINTMENT DASHBOARD
+90
+<?php } ?>
+ DOCTOR APPOINTMENT DASHBOARD
+91
+14.Coding for signup.php :
+<?php 
+session_start();
+error_reporting(0);
+include('includes/dbconnection.php');
+if(isset($_POST['submit']))
+ {
+ $fname=$_POST['fname'];
+ $mobno=$_POST['mobno'];
+ $email=$_POST['email'];
+ $sid=$_POST['specializationid'];
+ $password=md5($_POST['password']);
+ $ret="select Email from tbldoctor where Email=:email";
+ $query= $dbh -> prepare($ret);
+ $query-> bindParam(':email', $email, PDO::PARAM_STR);
+ $query-> execute();
+ $results = $query -> fetchAll(PDO::FETCH_OBJ);
+if($query -> rowCount() == 0)
+{
+$sql="Insert Into 
+tbldoctor(FullName,MobileNumber,Email,Specialization,Password)Values(:fname
+,:mobno,:email,:sid,:password)";
+$query = $dbh->prepare($sql);
+$query->bindParam(':fname',$fname,PDO::PARAM_STR);
+ DOCTOR APPOINTMENT DASHBOARD
+92
+$query->bindParam(':email',$email,PDO::PARAM_STR);
+$query->bindParam(':mobno',$mobno,PDO::PARAM_INT);
+$query->bindParam(':sid',$sid,PDO::PARAM_INT);
+$query->bindParam(':password',$password,PDO::PARAM_STR);
+$query->execute();
+$lastInsertId = $dbh->lastInsertId();
+if($lastInsertId)
+{
+echo "<script>alert('You have signup Successfully');</script>";
+}
+else
+{
+echo "<script>alert('Something went wrong.Please try again');</script>";
+}
+}
+else
+{
+echo "<script>alert('Email-id already exist. Please try again');</script>";
+}
+}
+?>
+<!doctype html>
+<!DOCTYPE html>
+ DOCTOR APPOINTMENT DASHBOARD
+93
+<html lang="en">
+<head>
+<title>DAMS - Login Page</title>
+<link rel="stylesheet" href="libs/bower/font-awesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="libs/bower/material-design-iconicfont/dist/css/material-design-iconic-font.min.css">
+<link rel="stylesheet" href="libs/bower/animate.css/animate.min.css">
+<link rel="stylesheet" href="assets/css/bootstrap.css">
+<link rel="stylesheet" href="assets/css/core.css">
+<link rel="stylesheet" href="assets/css/misc-pages.css">
+<link rel="stylesheet" 
+href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,
+300">
+</head>
+<body class="simple-page">
+<div id="back-to-home">
+<a href="../index.php" class="btn btn-outline btn-default"><i 
+class="fa fa-home animated zoomIn"></i></a>
+</div>
+<div class="simple-page-wrap">
+<div class="simple-page-logo animated swing">
+<span style="color: white"><i class="fa fa-gg"></i></span>
+<span style="color: white">DAMS</span>
+ DOCTOR APPOINTMENT DASHBOARD
+94
+</div><!-- logo -->
+<div class="simple-page-form animated flipInY" id="login-form">
+<h4 class="form-title m-b-xl text-center">Sign Up With Your DAMS 
+Account</h4>
+<form action="" method="post">
+<div class="form-group">
+<input id="fname" type="text" class="form-control" 
+placeholder="Full Name" name="fname" required="true">
+</div>
+<div class="form-group">
+<input id="email" type="email" class="form-control" 
+placeholder="Email" name="email" required="true">
+</div>
+<div class="form-group">
+<input id="mobno" type="text" class="form-control" 
+placeholder="Mobile" name="mobno" maxlength="10" pattern="[0-9]+" 
+required="true">
+</div>
+<div class="form-group">
+<select class="form-control" name="specializationid">
+<option value="">Choose Specialization</option>
+<?php
+$sql1="SELECT * from tblspecialization";
+ DOCTOR APPOINTMENT DASHBOARD
+95
+$query1 = $dbh -> prepare($sql1);
+$query1->execute();
+$results1=$query1->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query1->rowCount() > 0)
+{
+foreach($results1 as $row1)
+{ ?>
+<option value="<?php echo htmlentities($row1-
+>ID);?>"><?php echo htmlentities($row1->Specialization);?></option><?php 
+$cnt=$cnt+1;}} ?> 
+</select>
+ </div>
+<div class="form-group">
+<input id="password" type="password" class="form-control" 
+placeholder="Password" name="password" required="true">
+</div>
+<input type="submit" class="btn btn-primary" value="Register" name="submit">
+</form>
+</div><!-- #login-form -->
+<div class="simple-page-footer">
+<p>
+<small>Do you have an account ?</small>
+<a href="login.php">SIGN IN</a>
+ DOCTOR APPOINTMENT DASHBOARD
+96
+</p>
+</div>
+</div><!-- .simple-page-wrap -->
+</body>
+</html>
+ DOCTOR APPOINTMENT DASHBOARD
+97
+15.Coding for view-appointment-detail.php :
+<?php
+session_start();
+error_reporting(0);
+include('includes/dbconnection.php');
+if (strlen($_SESSION['damsid']==0)) {
+ header('location:logout.php');
+ } else{
+if(isset($_POST['submit']))
+ { 
+ $eid=$_GET['editid'];
+ $aptid=$_GET['aptid'];
+ $status=$_POST['status'];
+ $remark=$_POST['remark'];
+ $sql= "update tblappointment set Status=:status,Remark=:remark where 
+ID=:eid";
+ $query=$dbh->prepare($sql);
+$query->bindParam(':status',$status,PDO::PARAM_STR);
+$query->bindParam(':remark',$remark,PDO::PARAM_STR);
+$query->bindParam(':eid',$eid,PDO::PARAM_STR);
+$query->execute();
+echo '<script>alert("Remark and status has been updated")</script>';
+echo "<script>window.location.href ='all-appointment.php'</script>";
+}
+ DOCTOR APPOINTMENT DASHBOARD
+98
+ ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>DAMS|| View Appointment Detail</title>
+<link rel="stylesheet" href="libs/bower/font-awesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="libs/bower/material-design-iconicfont/dist/css/material-design-iconic-font.css">
+<!-- build:css assets/css/app.min.css -->
+<link rel="stylesheet" href="libs/bower/animate.css/animate.min.css">
+<link rel="stylesheet" 
+href="libs/bower/fullcalendar/dist/fullcalendar.min.css">
+<link rel="stylesheet" href="libs/bower/perfect-scrollbar/css/perfectscrollbar.css">
+<link rel="stylesheet" href="assets/css/bootstrap.css">
+<link rel="stylesheet" href="assets/css/core.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<!-- endbuild -->
+<link rel="stylesheet" 
+href="https://fonts.googleapis.com/css?family=Raleway:400,500,600,700,800,900,
+300">
+<script src="libs/bower/breakpoints.js/dist/breakpoints.min.js"></script>
+<script>
+Breakpoints();
+ DOCTOR APPOINTMENT DASHBOARD
+99
+</script>
+</head>
+<body class="menubar-left menubar-unfold menubar-light theme-primary">
+<!--============= start main area -->
+<?php include_once('includes/header.php');?>
+<?php include_once('includes/sidebar.php');?>
+<!-- APP MAIN ==========-->
+<main id="app-main" class="app-main">
+ <div class="wrap">
+<section class="app-content">
+<div class="row">
+<!-- DOM dataTable -->
+<div class="col-md-12">
+<div class="widget">
+<header class="widget-header">
+<h4 class="widget-title" style="color: 
+blue">Appointment Details</h4>
+</header><!-- .widget-header -->
+<hr class="widget-separator">
+<div class="widget-body">
+<div class="table-responsive">
+<?php
+ $eid=$_GET['editid'];
+ DOCTOR APPOINTMENT DASHBOARD
+100
+$sql="SELECT * from tblappointment where ID=:eid";
+$query = $dbh -> prepare($sql);
+$query-> bindParam(':eid', $eid, PDO::PARAM_STR);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $row)
+{ ?>
+<table border="1" class="table table-bordered mg-b-0">
+ <tr>
+ <th>Appointment Number</th>
+ <td><?php echo $aptno=($row->AppointmentNumber);?></td>
+ <th>Patient Name</th>
+ <td><?php echo $row->Name;?></td>
+ </tr>
+ <tr>
+ <th>Mobile Number</th>
+ <td><?php echo $row->MobileNumber;?></td>
+ <th>Email</th>
+ <td><?php echo $row->Email;?></td>
+ </tr>
+ DOCTOR APPOINTMENT DASHBOARD
+101
+ <tr>
+ <th>Appointment Date</th>
+ <td><?php echo $row->AppointmentDate;?></td>
+ <th>Appointment Time</th>
+ <td><?php echo $row->AppointmentTime;?></td>
+ </tr>
+ <tr>
+ <th>Apply Date</th>
+ <td><?php echo $row->ApplyDate;?></td>
+ <th>Appointment Final Status</th>
+<td colspan="4"> <?php $status=$row->Status;
+ if($row->Status=="")
+{
+ echo "Not yet updated";
+}
+if($row->Status=="Approved")
+{
+echo "Your appointment has been approved";
+}
+if($row->Status=="Cancelled")
+{
+ echo "Your appointment has been cancelled";
+}
+ DOCTOR APPOINTMENT DASHBOARD
+102
+?></td>
+ </tr>
+ <tr>
+ <th >Remark</th>
+<?php if($row->Remark==""){ ?>
+<td colspan="3"><?php echo "Not Updated Yet"; ?></td>
+<?php } else { ?> <td colspan="3"> <?php echo htmlentities($row->Remark);?>
+ </td>
+<?php } ?>
+</tr>
+<?php $cnt=$cnt+1;}} ?>
+</table> 
+<br>
+<?php 
+if ($status=="" ){
+?> 
+<p align="center" style="padding-top: 20px"> 
+<button class="btn btn-primary waves-effect waves-light w-lg" datatoggle="modal" data-target="#myModal">Take Action</button></p> 
+<?php } ?>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" arialabelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal-dialog" role="document">
+ <div class="modal-content">
+ DOCTOR APPOINTMENT DASHBOARD
+103
+ <div class="modal-header">
+ <h5 class="modal-title" 
+id="exampleModalLabel">Take Action</h5>
+ <button type="button" class="close" datadismiss="modal" aria-label="Close">
+ <span aria-hidden="true">&times;</span>
+ </button>
+ </div>
+ <div class="modal-body">
+<table class="table table-bordered table-hover data-tables">
+<form method="post" name="submit">
+tr>
+ <th>Remark :</th>
+ <td>
+ <textarea name="remark" placeholder="Remark" rows="12" cols="14" 
+class="form-control wd-450" required="true"></textarea></td>
+ </tr> 
+<tr>
+ <th>Status :</th>
+ <td>
+<select name="status" class="form-control wd-450" required="true" >
+ <option value="Approved" selected="true">Approved</option>
+ <option value="Cancelled">Cancelled</option>
+</select></td>
+ DOCTOR APPOINTMENT DASHBOARD
+104
+ </tr>
+</table>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" datadismiss="modal">Close</button>
+<button type="submit" name="submit" class="btn btn-primary">Update</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div><!-- .widget-body -->
+</div><!-- .widget -->
+</div><!-- END column -->
+</div><!-- .row -->
+</section><!-- .app-content -->
+</div><!-- .wrap -->
+ <!-- APP FOOTER -->
+ <?php include_once('includes/footer.php');?>
+ <!-- /#app-footer -->
+</main>
+<!--========== END app main -->
+ DOCTOR APPOINTMENT DASHBOARD
+105
+<!-- APP CUSTOMIZER -->
+<?php include_once('includes/customizer.php');?>
+<!-- build:js assets/js/core.min.js -->
+<script src="libs/bower/jquery/dist/jquery.js"></script>
+<script src="libs/bower/jquery-ui/jquery-ui.min.js"></script>
+<script src="libs/bower/jQuery-StorageAPI/jquery.storageapi.min.js"></script>
+<script src="libs/bower/bootstrapsass/assets/javascripts/bootstrap.js"></script>
+<script src="libs/bower/jquery-slimscroll/jquery.slimscroll.js"></script>
+<script src="libs/bower/perfect-scrollbar/js/perfectscrollbar.jquery.js"></script>
+<script src="libs/bower/PACE/pace.min.js"></script>
+<!-- endbuild -->
+ <!-- build:js assets/js/app.min.js -->
+<script src="assets/js/library.js"></script>
+<script src="assets/js/plugins.js"></script>
+<script src="assets/js/app.js"></script>
+<!-- endbuild -->
+<script src="libs/bower/moment/moment.js"></script>
+<script src="libs/bower/fullcalendar/dist/fullcalendar.min.js"></script>
+<script src="assets/js/fullcalendar.js"></script>
+</body>
+</html>
+ DOCTOR APPOINTMENT DASHBOARD
+106
+<?php }?>
+ DOCTOR APPOINTMENT DASHBOARD
+107
+16.Coding for check-appointment.php :
+<?php
+session_start();
+//error_reporting(0);
+include('doctor/includes/dbconnection.php');
+?>
+<!doctype html>
+<html lang="en">
+ <head>
+ <title>Doctor Appointment Management System || Home Page</title>
+ <!-- CSS FILES --> 
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link 
+href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;7
+00&display=swap" rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/bootstrap-icons.css" rel="stylesheet">
+<link href="css/owl.carousel.min.css" rel="stylesheet">
+<link href="css/owl.theme.default.min.css" rel="stylesheet">
+<link href="css/templatemo-medic-care.css" rel="stylesheet">
+ <script>
+function getdoctors(val) {
+ alert(val);
+ DOCTOR APPOINTMENT DASHBOARD
+108
+$.ajax({
+type: "POST",
+url: "get_doctors.php",
+data:'sp_id='+val,
+success: function(data){
+$("#doctorlist").html(data);
+}
+});
+}
+</script>
+ </head>
+ <body id="top">
+ <main>
+<?php include_once('includes/header.php');?>
+<section class="section-padding" id="booking">
+ <div class="container">
+ <div class="row">
+ <div class="col-lg-12 col-12 mx-auto">
+ <div class="booking-form">
+ <h2 class="text-center mb-lg-3 mb-2">Search Appointment History by 
+Appointment Number/Name/Mobile No</h2>
+<form role="form" method="post">
+ <div class="row">
+ DOCTOR APPOINTMENT DASHBOARD
+109
+ <div class="col-lg-6 col-12">
+ <input id="searchdata" type="text" name="searchdata" 
+required="true" class="form-control" placeholder="Appointment 
+No./Name/Mobile No.">
+ </div>
+<div class="col-lg-3 col-md-4 col-6 mx-auto">
+ <button type="submit" class="form-control" 
+name="search" id="submit-button">Check</button>
+ </div>
+ </div>
+ </form>
+</div>
+ <?php
+if(isset($_POST['search']))
+{ 
+$sdata=$_POST['searchdata'];
+ ?>
+ <h4 align="center">Result against "<?php echo $sdata;?>" keyword </h4> 
+ <div class="widget-body">
+ <div class="table-responsive">
+ <table class="table table-bordered table-hover js-basic-example 
+dataTable table-custom">
+ <thead>
+ <tr>
+ DOCTOR APPOINTMENT DASHBOARD
+110
+ <th>S.No</th>
+ <th>Appointment Number</th>
+ <th>Patient Name</th>
+ <th>Mobile Number</th>
+ <th>Email</th>
+ <th>Status</th>
+ <th>Remark</th>
+ 
+ </tr>
+ </thead>
+ <tbody>
+ <?php
+$sql="SELECT * from tblappointment where AppointmentNumber like '$sdata%' 
+|| Name like '$sdata%' || MobileNumber like '$sdata%'";
+$query = $dbh -> prepare($sql);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $row)
+{ ?>
+ DOCTOR APPOINTMENT DASHBOARD
+111
+ <tr>
+ <td><?php echo htmlentities($cnt);?></td>
+ <td><?php echo htmlentities($row-
+>AppointmentNumber);?></td>
+ <td><?php echo htmlentities($row->Name);?></td>
+ <td><?php echo htmlentities($row-
+>MobileNumber);?></td>
+ <td><?php echo htmlentities($row->Email);?></td>
+ <?php if($row->Status==""){ ?>
+ <td><?php echo "Not Updated Yet"; ?></td>
+<?php } else { ?> <td><?php echo htmlentities($row->Status);?>
+ </td>
+ <?php } ?> 
+ 
+ <?php if($row->Remark==""){ ?>
+ <td><?php echo "Not Updated Yet"; ?></td>
+<?php } else { ?> <td><?php echo htmlentities($row->Remark);?>
+ </td>
+ <?php } ?>
+ 
+ </tr>
+ 
+ DOCTOR APPOINTMENT DASHBOARD
+112
+ 
+ </tbody>
+ 
+ <?php 
+$cnt=$cnt+1;
+} } else { ?>
+ <tr>
+ <td colspan="8"> No record found against this search</td>
+ </tr>
+ <?php } }?>
+ </table>
+ </div>
+ </div>
+ </div>
+ </section>
+ 
+ </main>
+ <?php include_once('includes/footer.php');?>
+ <!-- JAVASCRIPT FILES -->
+ <script src="js/jquery.min.js"></script>
+ <script src="js/bootstrap.bundle.min.js"></script>
+ DOCTOR APPOINTMENT DASHBOARD
+113
+ <script src="js/owl.carousel.min.js"></script>
+ <script src="js/scrollspy.min.js"></script>
+ <script src="js/custom.js"></script>
+ </body>
+</html>
+ DOCTOR APPOINTMENT DASHBOARD
+114
+17.Coding for get_doctors.php :
+<?php
+include('doctor/includes/dbconnection.php');
+if(!empty($_POST["sp_id"])) 
+{
+$spid=$_POST["sp_id"];
+$sql=$dbh->prepare("SELECT * FROM tbldoctor WHERE 
+Specialization=:spid");
+$sql->execute(array(':spid' => $spid));
+?>
+<option value="">Select Doctor</option>
+<?php
+while($row =$sql->fetch())
+{
+?>
+<option value="<?php echo $row["ID"]; ?>"><?php echo $row["FullName"]; 
+?></option>
+<?php
+}
+}
+?>
+ DOCTOR APPOINTMENT DASHBOARD
+115
+18.Coding for index.php :
+<?php
+session_start();
+//error_reporting(0);
+include('doctor/includes/dbconnection.php');
+ if(isset($_POST['submit']))
+ {
+$name=$_POST['name'];
+ $mobnum=$_POST['phone'];
+$email=$_POST['email'];
+$appdate=$_POST['date'];
+$aaptime=$_POST['time'];
+$specialization=$_POST['specialization'];
+ $doctorlist=$_POST['doctorlist'];
+$message=$_POST['message'];
+$aptnumber=mt_rand(100000000, 999999999);
+$cdate=date('Y-m-d');
+if($appdate<=$cdate){
+ echo '<script>alert("Appointment date must be greater than todays 
+date")</script>';
+} else {
+$sql="insert into 
+tblappointment(AppointmentNumber,Name,MobileNumber,Email,AppointmentDa
+ DOCTOR APPOINTMENT DASHBOARD
+116
+te,AppointmentTime,Specialization,Doctor,Message)values(:aptnumber,:name,:mo
+bnum,:email,:appdate,:aaptime,:specialization,:doctorlist,:message)";
+$query=$dbh->prepare($sql);
+$query->bindParam(':aptnumber',$aptnumber,PDO::PARAM_STR);
+$query->bindParam(':name',$name,PDO::PARAM_STR);
+$query->bindParam(':mobnum',$mobnum,PDO::PARAM_STR);
+$query->bindParam(':email',$email,PDO::PARAM_STR);
+$query->bindParam(':appdate',$appdate,PDO::PARAM_STR);
+$query->bindParam(':aaptime',$aaptime,PDO::PARAM_STR);
+$query->bindParam(':specialization',$specialization,PDO::PARAM_STR);
+$query->bindParam(':doctorlist',$doctorlist,PDO::PARAM_STR);
+$query->bindParam(':message',$message,PDO::PARAM_STR);
+$query->execute();
+ $LastInsertId=$dbh->lastInsertId();
+ if ($LastInsertId>0) {
+ echo '<script>alert("Your Appointment Request Has Been Send. We Will 
+Contact You Soon")</script>';
+echo "<script>window.location.href ='index.php'</script>";
+ }
+ else
+ {
+ echo '<script>alert("Something Went Wrong. Please try again")</script>';
+ }
+ DOCTOR APPOINTMENT DASHBOARD
+117
+}
+}
+?>
+<!doctype html>
+<html lang="en">
+ <head>
+ <title>Doctor Appointment Management System || Home Page</title>
+ <!-- CSS FILES --> 
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ 
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ 
+ <link 
+href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;7
+00&display=swap" rel="stylesheet">
+ <link href="css/bootstrap.min.css" rel="stylesheet">
+ <link href="css/bootstrap-icons.css" rel="stylesheet">
+ <link href="css/owl.carousel.min.css" rel="stylesheet">
+ <link href="css/owl.theme.default.min.css" rel="stylesheet">
+ DOCTOR APPOINTMENT DASHBOARD
+118
+ <link href="css/templatemo-medic-care.css" rel="stylesheet">
+ <script>
+function getdoctors(val) {
+ // alert(val);
+$.ajax({
+type: "POST",
+url: "get_doctors.php",
+data:'sp_id='+val,
+success: function(data){
+$("#doctorlist").html(data);
+}
+});
+}
+</script>
+ </head>
+ 
+ <body id="top">
+ 
+ <main>
+ <?php include_once('includes/header.php');?>
+ DOCTOR APPOINTMENT DASHBOARD
+119
+ <section class="hero" id="hero">
+ <div class="container">
+ <div class="row">
+ <div class="col-12">
+ <div id="myCarousel" class="carousel slide carousel-fade" databs-ride="carousel">
+ <div class="carousel-inner">
+ <div class="carousel-item active">
+ <img src="images/slider/portrait-successful-mid-adultdoctor-with-crossed-arms.jpg" class="img-fluid" alt="">
+ </div>
+ <div class="carousel-item">
+ <img src="images/slider/young-asian-female-dentistwhite-coat-posing-clinic-equipment.jpg" class="img-fluid" alt="">
+ </div>
+ <div class="carousel-item">
+ <img src="images/slider/doctor-s-hand-holdingstethoscope-closeup.jpg" class="img-fluid" alt="">
+ </div>
+ </div>
+ DOCTOR APPOINTMENT DASHBOARD
+120
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
+ <section class="section-padding" id="about">
+ <div class="container">
+ <div class="row">
+ <div class="col-lg-6 col-md-6 col-12">
+ <?php
+$sql="SELECT * from tblpage where PageType='aboutus'";
+$query = $dbh -> prepare($sql);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
+if($query->rowCount() > 0)
+{
+foreach($results as $row)
+ DOCTOR APPOINTMENT DASHBOARD
+121
+{ ?>
+ <h2 class="mb-lg-3 mb-3"><?php echo htmlentities($row-
+>PageTitle);?></h2>
+ <p><?php echo ($row->PageDescription);?>.</p>
+ <?php $cnt=$cnt+1;}} ?>
+ </div>
+ <div class="col-lg-4 col-md-5 col-12 mx-auto">
+ <div class="featured-circle bg-white shadow-lg d-flex justifycontent-center align-items-center">
+ <p class="featured-text"><span class="featurednumber">12</span> Years<br> of Experiences</p>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
+ <section class="gallery">
+ <div class="container">
+ <div class="row">
+ DOCTOR APPOINTMENT DASHBOARD
+122
+ <div class="col-lg-6 col-6 ps-0">
+ <img src="images/gallery/medium-shot-man-gettingvaccine.jpg" class="img-fluid galleryImage" alt="get a vaccine" title="get a 
+vaccine for yourself">
+ </div>
+ <div class="col-lg-6 col-6 pe-0">
+ <img src="images/gallery/female-doctor-with-presenting-handgesture.jpg" class="img-fluid galleryImage" alt="wear a mask" title="wear a mask 
+to protect yourself">
+ </div>
+ </div>
+ </div>
+ </section>
+ 
+ 
+ <section class="section-padding" id="booking">
+ <div class="container">
+ <div class="row">
+ DOCTOR APPOINTMENT DASHBOARD
+123
+ 
+ <div class="col-lg-8 col-12 mx-auto">
+ <div class="booking-form">
+ 
+ <h2 class="text-center mb-lg-3 mb-2">Book an 
+appointment</h2>
+ 
+ <form role="form" method="post">
+ <div class="row">
+ <div class="col-lg-6 col-12">
+ <input type="text" name="name" id="name" 
+class="form-control" placeholder="Full name" required='true'>
+ </div>
+ <div class="col-lg-6 col-12">
+ <input type="email" name="email" id="email" 
+pattern="[^ @]*@[^ @]*" class="form-control" placeholder="Email address" 
+required='true'>
+ </div>
+ 
+ <div class="col-lg-6 col-12">
+ <input type="telephone" name="phone" id="phone" 
+class="form-control" placeholder="Enter Phone Number" maxlength="10">
+ </div>
+ DOCTOR APPOINTMENT DASHBOARD
+124
+ <div class="col-lg-6 col-12">
+ <input type="date" name="date" id="date" value="" 
+class="form-control">
+ 
+ </div>
+ <div class="col-lg-6 col-12">
+ <input type="time" name="time" id="time" value="" 
+class="form-control">
+ 
+ </div>
+ <div class="col-lg-6 col-12">
+<select onChange="getdoctors(this.value);" name="specialization" 
+id="specialization" class="form-control" required>
+<option value="">Select specialization</option>
+<!--- Fetching States--->
+<?php
+$sql="SELECT * FROM tblspecialization";
+$stmt=$dbh->query($sql);
+$stmt->setFetchMode(PDO::FETCH_ASSOC);
+while($row =$stmt->fetch()) { 
+ ?>
+ DOCTOR APPOINTMENT DASHBOARD
+125
+<option value="<?php echo $row['ID'];?>"><?php echo 
+$row['Specialization'];?></option>
+<?php }?>
+</select>
+</div>
+ <div class="col-lg-6 col-12">
+<select name="doctorlist" id="doctorlist" class="form-control">
+<option value="">Select Doctor</option>
+</select>
+</div>
+ <div class="col-12">
+ <textarea class="form-control" rows="5" id="message" 
+name="message" placeholder="Additional Message"></textarea>
+ </div>
+ <div class="col-lg-3 col-md-4 col-6 mx-auto">
+ <button type="submit" class="form-control" 
+name="submit" id="submit-button">Book Now</button>
+ </div>
+ DOCTOR APPOINTMENT DASHBOARD
+126
+ </div>
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
+ </main>
+ <?php include_once('includes/footer.php');?>
+ <!-- JAVASCRIPT FILES -->
+ <script src="js/jquery.min.js"></script>
+ <script src="js/bootstrap.bundle.min.js"></script>
+ <script src="js/owl.carousel.min.js"></script>
+ <script src="js/scrollspy.min.js"></script>
+ <script src="js/custom.js"></script>
+ </body>
+</html>
